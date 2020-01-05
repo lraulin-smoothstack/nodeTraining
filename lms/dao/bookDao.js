@@ -1,4 +1,13 @@
-var db = require("./db");
+const db = require("./db");
+const { makeBook } = require("../entities");
+
+exports.getBook = id =>
+  new Promise((resolve, reject) => {
+    db.query("select * from books where id = ?", [id], (err, data) => {
+      if (err) return reject(err);
+      resolve(data);
+    });
+  });
 
 exports.getAllBooks = () =>
   new Promise((resolve, reject) => {
@@ -8,26 +17,40 @@ exports.getAllBooks = () =>
     });
   });
 
-exports.addBook = (book, cb) => {
-  db.beginTransaction(function(err) {
-    if (err) cb(err, null);
+exports.addBook = (book = makeBook()) =>
+  new Promise((resolve, reject) =>
+    db.beginTransaction(err => {
+      if (err) reject(err);
 
-    db.query(
-      "insert into book(title, author) values(?,?)",
-      [book.title, book.author],
-      (err, res) => {
-        if (err) {
-          db.rollback((err, res) => {
-            cb(err, res);
-          });
-        }
-        db.commit((err, res) => {
-          cb(err, res);
-        });
-      },
-    );
-  });
-};
+      db.query(
+        "insert into books(title, author, publisher, pages) values(?,?,?,?)",
+        [book.title, book.author, book.publisher, book.pages],
+        (error, result) =>
+          error
+            ? db.rollback(err => reject(err))
+            : db.commit(err => resolve(result)),
+      );
+    }),
+  );
+
+exports.updateBook = (book = makeBook()) =>
+  new Promise((resolve, reject) =>
+    db.beginTransaction(err => {
+      if (err) reject(err);
+
+      db.query(
+        "update books set title = ?, author = ?, publisher = ?, pages = ? where id = ?",
+        [book.title, book.author, book.publisher, book.pages, book.id],
+        (error, result) =>
+          error
+            ? db.rollback(err => reject(err))
+            : db.commit(err => {
+                if (err) reject(err);
+                resolve(result);
+              }),
+      );
+    }),
+  );
 
 exports.removeBook = bookId =>
   new Promise((resolve, reject) => {

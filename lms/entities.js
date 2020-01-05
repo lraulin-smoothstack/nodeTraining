@@ -1,13 +1,13 @@
 module.exports.makeBook = ({
-  bookId = 0,
+  id = -1,
   title = "",
-  authors = [""],
+  author = "",
   publisher = "",
-  genres = [""],
+  pages = 0,
 }) => ({
-  bookId,
+  id,
   title,
-  authors,
+  author,
   publisher,
-  genres,
+  pages,
 });
