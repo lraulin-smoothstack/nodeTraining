@@ -2,12 +2,14 @@ const routes = require("express").Router();
 const db = require("../dao/db");
 const bookDao = require("../dao/bookDao");
 
-routes.get("/book", (req, res) => {
-  bookDao.getAllBooks((error, result) => {
-    if (error) throw error;
-    res.setHeader("Content-Type", "application/json");
-    res.send(result);
-  });
+routes.get("/book", (request, response) => {
+  bookDao
+    .getAllBooks()
+    .then(data => {
+      response.setHeader("Content-Type", "application/json");
+      response.send(data);
+    })
+    .catch(err => console.log(err));
 });
 
 routes.post("/book", (req, res) => {
@@ -22,14 +24,14 @@ routes.post("/book", (req, res) => {
   });
 });
 
-routes.delete("/book/:id", (req, res) => {
-  bookDao.removeBook(req.params.id, (err, result) => {
-    if (err) {
-      res.status(400);
-      res.send("Delete Book Failed!");
-    }
-    res.send("Delete Book Successful!");
-  });
+routes.delete("/book/:id", (request, response) => {
+  bookDao
+    .removeBook(request.params.id)
+    .then(result => response.send("Delete Book Successful!"))
+    .catch(err => {
+      response.status(400);
+      response.send("Delete Book Failed!");
+    });
 });
 
 module.exports = routes;

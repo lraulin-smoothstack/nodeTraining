@@ -1,17 +1,19 @@
 var db = require("./db");
 
-exports.getAllBooks = cb => {
-  db.query("select * from lms.book", (err, result) => {
-    cb(err, result);
+exports.getAllBooks = () =>
+  new Promise((resolve, reject) => {
+    db.query("select * from books", (err, data) => {
+      if (err) return reject(err);
+      resolve(data);
+    });
   });
-};
 
 exports.addBook = (book, cb) => {
   db.beginTransaction(function(err) {
     if (err) cb(err, null);
 
     db.query(
-      "insert into lms.book(title, author) values(?,?)",
+      "insert into book(title, author) values(?,?)",
       [book.title, book.author],
       (err, res) => {
         if (err) {
@@ -27,22 +29,20 @@ exports.addBook = (book, cb) => {
   });
 };
 
-exports.removeBook = (bookId, cb) => {
-  db.beginTransaction(err => {
-    if (err) cb(err, null);
+exports.removeBook = bookId =>
+  new Promise((resolve, reject) => {
+    db.beginTransaction(err => {
+      if (err) return reject(err);
 
-    db.query("delete from lms.book where book_id = ?", [bookId], function(
-      err,
-      res,
-    ) {
-      if (err) {
-        db.rollback(function(err, res) {
-          cb(err, res);
+      db.query("delete from books where id = ?", [bookId], (err, res) => {
+        if (err) {
+          db.rollback((err, res) => {
+            reject(err);
+          });
+        }
+        db.commit((err, res) => {
+          resolve(res);
         });
-      }
-      db.commit(function(err, res) {
-        cb(err, res);
       });
     });
   });
-};
