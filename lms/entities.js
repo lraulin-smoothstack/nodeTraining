@@ -4,7 +4,7 @@ module.exports.makeBook = ({
   author = "",
   publisher = "",
   pages = 0,
-}) => ({
+} = {}) => ({
   id,
   title,
   author,
