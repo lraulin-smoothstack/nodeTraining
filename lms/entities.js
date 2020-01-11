@@ -1,5 +1,5 @@
-module.exports.makeBook = ({
-  id = -1,
+module.exports.createBook = ({
+  id = 0,
   title = "",
   author = "",
   publisher = "",

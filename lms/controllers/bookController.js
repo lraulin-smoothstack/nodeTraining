@@ -1,7 +1,7 @@
 const routes = require("express").Router();
 const db = require("../dao/db");
 const bookDao = require("../dao/bookDao");
-const { makeBook } = require("../entities");
+const { createBook } = require("../entities");
 
 routes.get("/book", (request, response) => {
   bookDao
@@ -23,12 +23,12 @@ routes.get("/book/:id", (request, response) => {
     .catch(err => console.log(err));
 });
 
-routes.post("/book/:author/:title/:publisher/:pages", (request, response) => {
-  const book = makeBook({
-    author: request.params.author,
-    title: request.params.title,
-    publisher: request.params.publisher,
-    pages: request.params.pages,
+routes.post("/book", (request, response) => {
+  const book = createBook({
+    author: request.query.author,
+    title: request.query.title,
+    publisher: request.query.publisher,
+    pages: request.query.pages,
   });
   bookDao
     .addBook(book)
@@ -42,28 +42,25 @@ routes.post("/book/:author/:title/:publisher/:pages", (request, response) => {
     });
 });
 
-routes.put(
-  "/book/:id/:author/:title/:publisher/:pages",
-  (request, response) => {
-    const book = makeBook({
-      id: request.params.id,
-      author: request.params.author,
-      title: request.params.title,
-      publisher: request.params.publisher,
-      pages: request.params.pages,
+routes.put("/book", (request, response) => {
+  const book = createBook({
+    id: request.query.id,
+    author: request.query.author,
+    title: request.query.title,
+    publisher: request.query.publisher,
+    pages: request.query.pages,
+  });
+  bookDao
+    .updateBook(book)
+    .then(result => {
+      response.status(201);
+      response.send("Update Book Successful!");
+    })
+    .catch(err => {
+      response.status(400);
+      response.send("Update Book Failed!");
     });
-    bookDao
-      .updateBook(book)
-      .then(result => {
-        response.status(201);
-        response.send("Update Book Successful!");
-      })
-      .catch(err => {
-        response.status(400);
-        response.send("Update Book Failed!");
-      });
-  },
-);
+});
 
 routes.delete("/book/:id", (request, response) => {
   bookDao

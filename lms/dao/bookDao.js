@@ -1,5 +1,5 @@
 const db = require("./db");
-const { makeBook } = require("../entities");
+const { createBook } = require("../entities");
 
 exports.getBook = id =>
   new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ exports.getAllBooks = () =>
     });
   });
 
-exports.addBook = (book = makeBook()) =>
+exports.addBook = (book = createBook()) =>
   new Promise((resolve, reject) =>
     db.beginTransaction(err => {
       if (err) reject(err);
@@ -33,7 +33,7 @@ exports.addBook = (book = makeBook()) =>
     }),
   );
 
-exports.updateBook = (book = makeBook()) =>
+exports.updateBook = (book = createBook()) =>
   new Promise((resolve, reject) =>
     db.beginTransaction(err => {
       if (err) reject(err);
