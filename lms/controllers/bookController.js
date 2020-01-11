@@ -1,5 +1,4 @@
 const routes = require("express").Router();
-const db = require("../dao/db");
 const bookDao = require("../dao/bookDao");
 const { createBook } = require("../entities");
 
