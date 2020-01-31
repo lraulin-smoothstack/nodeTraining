@@ -3,7 +3,7 @@ const { createBook } = require("../entities");
 
 exports.getBook = id =>
   new Promise((resolve, reject) => {
-    db.query("select * from books where id = ?", [id], (err, data) => {
+    db.query("select * from book where id = ?", [id], (err, data) => {
       if (err) return reject(err);
       resolve(data);
     });
@@ -11,7 +11,7 @@ exports.getBook = id =>
 
 exports.getAllBooks = () =>
   new Promise((resolve, reject) => {
-    db.query("select * from books", (err, data) => {
+    db.query("select * from book", (err, data) => {
       if (err) return reject(err);
       resolve(data);
     });
@@ -23,7 +23,7 @@ exports.addBook = (book = createBook()) =>
       if (err) reject(err);
 
       db.query(
-        "insert into books(title, author, publisher, pages) values(?,?,?,?)",
+        "insert into book(title, author, publisher, pages) values(?,?,?,?)",
         [book.title, book.author, book.publisher, book.pages],
         (error, result) =>
           error
@@ -39,7 +39,7 @@ exports.updateBook = (book = createBook()) =>
       if (err) reject(err);
 
       db.query(
-        "update books set title = ?, author = ?, publisher = ?, pages = ? where id = ?",
+        "update book set title = ?, author = ?, publisher = ?, pages = ? where id = ?",
         [book.title, book.author, book.publisher, book.pages, book.id],
         (error, result) =>
           error
@@ -57,7 +57,7 @@ exports.removeBook = bookId =>
     db.beginTransaction(err => {
       if (err) return reject(err);
 
-      db.query("delete from books where id = ?", [bookId], (err, res) => {
+      db.query("delete from book where id = ?", [bookId], (err, res) => {
         if (err) {
           db.rollback((err, res) => {
             reject(err);

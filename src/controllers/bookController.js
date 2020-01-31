@@ -2,7 +2,7 @@ const routes = require("express").Router();
 const bookDao = require("../dao/bookDao");
 const { createBook } = require("../entities");
 
-routes.get("/book", (request, response) => {
+routes.get("/books", (request, response) => {
   bookDao
     .getAllBooks()
     .then(data => {
@@ -24,10 +24,10 @@ routes.get("/book/:id", (request, response) => {
 
 routes.post("/book", (request, response) => {
   const book = createBook({
-    author: request.query.author,
-    title: request.query.title,
-    publisher: request.query.publisher,
-    pages: request.query.pages,
+    author: request.body.author,
+    title: request.body.title,
+    publisher: request.body.publisher,
+    pages: request.body.pages,
   });
   bookDao
     .addBook(book)
